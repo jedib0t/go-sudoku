@@ -1,0 +1,6 @@
+*.csv
+*.swp
+.coverprofile
+/.idea/
+/go-sudoku
+/go-sudoku.exe
