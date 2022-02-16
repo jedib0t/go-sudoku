@@ -49,6 +49,9 @@ var (
 	flagSeed       = flag.Int64("seed", 0, "RNG Seed (0 => random number based on time) [$SEED]")
 	flagTheme      = flag.String("theme", "none", "Table formatting theme ("+themes+")")
 	flagType       = flag.String("type", "default", "Sudoku Type ("+types+")")
+
+	// version
+	version = "dev"
 )
 
 func main() {
@@ -256,6 +259,8 @@ func printHelp() {
 	fmt.Printf(`go-sudoku: A GoLang based Sudoku generator and solver.
 
 Usage: go-sudoku [flags] <action>
+
+Version: ` + version + `
 
 Actions:
 --------
