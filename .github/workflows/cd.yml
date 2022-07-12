@@ -19,13 +19,12 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v2
         with:
-          go-version: 1.16
+          go-version: 1.18
 
       # Download all the tools used in the steps that follow
       - name: Set up Tools
         run: |
-          go get -u github.com/mitchellh/gox
-          go get -u golang.org/x/lint/golint
+          make get-tools
 
       # Run all the unit-tests
       - name: Test
