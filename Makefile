@@ -12,6 +12,8 @@ all: test
 
 build:
 	go build .
+
+demo: build
 	./go-sudoku generate
 	./go-sudoku -type jigsaw generate
 	./go-sudoku -type samurai generate
