@@ -1,8 +1,5 @@
 .PHONY: all test dist
 
-TOOLS := github.com/mitchellh/gox@v1.0.1 \
-            golang.org/x/lint/golint \
-
 VERSION ?= dev
 ifdef GITHUB_REF_NAME
 VERSION = $(GITHUB_REF_NAME)
@@ -16,7 +13,7 @@ all: test
 build:
 	go build .
 
-demo-generate: build
+demo: build
 	./go-sudoku generate
 	./go-sudoku -type jigsaw generate
 	./go-sudoku -type samurai generate
@@ -38,6 +35,10 @@ gen: gen-readme
 
 gen-readme: build
 	./scripts/generate_readme.sh > README.md
+
+get-tools:
+	go install github.com/mitchellh/gox@v1.0.1
+	go install golang.org/x/lint/golint@latest
 
 lint:
 	golint -set_exit_status $(shell go list ./...)
