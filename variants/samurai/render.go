@@ -1,4 +1,4 @@
-package writer
+package samurai
 
 import (
 	"fmt"
@@ -8,8 +8,13 @@ import (
 	"github.com/jedib0t/go-sudoku/sudoku"
 )
 
-// RenderSamurai renders a Samurai Sudoku which is a combination of 5 Sudokus.
-func RenderSamurai(grids []*sudoku.Grid) (string, error) {
+var (
+	colorsBright = text.Colors{}
+	colorsDark   = text.Colors{}
+)
+
+// Render renders a Samurai Sudoku which is a combination of 5 Sudokus.
+func Render(grids []*sudoku.Grid) (string, error) {
 	if len(grids) != 5 {
 		return " ", fmt.Errorf("found %d interconnected grids instead of 5", len(grids))
 	}
@@ -85,8 +90,8 @@ func RenderSamurai(grids []*sudoku.Grid) (string, error) {
 	tw.Style().Box.PaddingLeft = ""
 	tw.Style().Box.PaddingRight = ""
 	tw.Style().Options.DrawBorder = false
-	tw.Style().Options.SeparateColumns = themeSelected == themeNone
-	tw.Style().Options.SeparateRows = themeSelected == themeNone
+	tw.Style().Options.SeparateColumns = true
+	tw.Style().Options.SeparateRows = true
 	return tw.Render(), nil
 }
 

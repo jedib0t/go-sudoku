@@ -1,4 +1,4 @@
-package writer
+package jigsaw
 
 import (
 	"fmt"
@@ -23,8 +23,8 @@ var (
 	jigSawColorDiff = text.Colors{text.Italic}
 )
 
-// RenderJigSaw renders a JigSaw Sudoku in colored mode.
-func RenderJigSaw(g *sudoku.Grid) string {
+// Render renders a JigSaw Sudoku in colored mode.
+func Render(g *sudoku.Grid) string {
 	subGrids := g.SubGrids()
 
 	tw := table.NewWriter()
@@ -46,9 +46,9 @@ func RenderJigSaw(g *sudoku.Grid) string {
 	return tw.Render()
 }
 
-// RenderJigSawDiff renders a JigSaw Sudoku in colored mode and highlights the
+// RenderDiff renders a JigSaw Sudoku in colored mode and highlights the
 // differences compared to Grid 'og'.
-func RenderJigSawDiff(g, og *sudoku.Grid) string {
+func RenderDiff(g, og *sudoku.Grid) string {
 	subGrids := g.SubGrids()
 
 	tw := table.NewWriter()

@@ -18,6 +18,8 @@ go-sudoku: A GoLang based Sudoku generator and solver.
 
 Usage: go-sudoku [flags] <action>
 
+Version: dev
+
 Actions:
 --------
   * generate: Generate a Sudoku Grid and apply the specified difficulty on it
@@ -53,8 +55,6 @@ Optional Flags:
     	Show progress in real-time with an artificial delay?
   -seed int
     	RNG Seed (0 => random number based on time) [$SEED]
-  -theme string
-    	Table formatting theme (none/blue/cyan/green/magenta/red/yellow) (default "none")
   -type string
     	Sudoku Type (default/jigsaw/samurai) (default "default")
 ```

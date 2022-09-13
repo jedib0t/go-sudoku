@@ -2,7 +2,8 @@ package generator
 
 import (
 	"math/rand"
-	"time"
+
+	"github.com/jedib0t/go-sudoku/sudoku"
 )
 
 // Option customized the behavior of one or more Generators.
@@ -59,16 +60,13 @@ func WithRNG(rng *rand.Rand) Option {
 // Applies to:
 //  * BackTrackingGenerator
 //  * BruteForceGenerator
-func WithProgress() Option {
-	waitInterval := time.Millisecond * 10
+func WithProgress(rpFn func(g, og *sudoku.Grid, attempts, cycles int)) Option {
 	return func(g Generator) {
 		switch g.(type) {
 		case *backTrackingGenerator:
-			g.(*backTrackingGenerator).baseGenerator.shouldShowProgress = true
-			g.(*backTrackingGenerator).baseGenerator.showProgressInterval = waitInterval
+			g.(*backTrackingGenerator).baseGenerator.renderProgressFn = rpFn
 		case *bruteForceGenerator:
-			g.(*bruteForceGenerator).baseGenerator.shouldShowProgress = true
-			g.(*bruteForceGenerator).baseGenerator.showProgressInterval = waitInterval
+			g.(*bruteForceGenerator).baseGenerator.renderProgressFn = rpFn
 		}
 	}
 }

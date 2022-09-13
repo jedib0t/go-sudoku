@@ -7,7 +7,6 @@ import (
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/jedib0t/go-sudoku/generator"
 	"github.com/jedib0t/go-sudoku/sudoku"
-	"github.com/jedib0t/go-sudoku/writer"
 )
 
 // Generate generates and returns 5 grids that form a Samurai Sudoku. Something
@@ -84,9 +83,9 @@ func Generate(g generator.Generator) ([]*sudoku.Grid, error) {
 	// debugging
 	if g.Debug() {
 		twOriginal := table.NewWriter()
-		twOriginal.AppendRow(table.Row{writer.Render(grid1), "", writer.Render(grid2)})
-		twOriginal.AppendRow(table.Row{"", writer.Render(grid0), ""})
-		twOriginal.AppendRow(table.Row{writer.Render(grid3), "", writer.Render(grid4)})
+		twOriginal.AppendRow(table.Row{sudoku.Render(grid1), "", sudoku.Render(grid2)})
+		twOriginal.AppendRow(table.Row{"", sudoku.Render(grid0), ""})
+		twOriginal.AppendRow(table.Row{sudoku.Render(grid3), "", sudoku.Render(grid4)})
 		twOriginal.SetStyle(table.StyleBold)
 		twOriginal.Style().Box.PaddingLeft = ""
 		twOriginal.Style().Box.PaddingRight = ""

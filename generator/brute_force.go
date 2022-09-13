@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/jedib0t/go-sudoku/sudoku"
-	"github.com/jedib0t/go-sudoku/utils"
 )
 
 const (
@@ -63,7 +62,7 @@ func (b *bruteForceGenerator) Generate(og *sudoku.Grid) (*sudoku.Grid, error) {
 func (b *bruteForceGenerator) generateByNumberAndSubGrids(grid *sudoku.Grid) (*sudoku.Grid, error) {
 	b.cycles = 0
 
-	rns := utils.NewRandomNumberSequencer(defaultRNG, 9)
+	rns := NewRandomNumberSequencer(defaultRNG, 9)
 	for n := rns.Get(); n > 0; n = rns.Get() {
 		for _, xy := range b.subGridOrder {
 			err := b.generateForSubGrid(grid, xy[0], xy[1], n)
@@ -86,9 +85,9 @@ func (b *bruteForceGenerator) generateForSubGrid(grid *sudoku.Grid, row, col, n 
 	defer func() {
 		b.cycles++
 	}()
-	rnsRow := utils.NewRandomNumberSequencer(defaultRNG, 3)
+	rnsRow := NewRandomNumberSequencer(defaultRNG, 3)
 	for sgRow := rnsRow.Get(); sgRow > 0; sgRow = rnsRow.Get() {
-		rnsCol := utils.NewRandomNumberSequencer(defaultRNG, 3)
+		rnsCol := NewRandomNumberSequencer(defaultRNG, 3)
 		for sgCol := rnsCol.Get(); sgCol > 0; sgCol = rnsCol.Get() {
 			fRow, fCol := row+sgRow-1, col+sgCol-1
 			if !grid.IsSet(fRow, fCol) {

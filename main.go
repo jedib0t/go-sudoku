@@ -13,12 +13,11 @@ import (
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/jedib0t/go-sudoku/generator"
-	"github.com/jedib0t/go-sudoku/jigsaw"
-	"github.com/jedib0t/go-sudoku/samurai"
 	"github.com/jedib0t/go-sudoku/sudoku"
 	"github.com/jedib0t/go-sudoku/sudoku/difficulty"
 	"github.com/jedib0t/go-sudoku/sudoku/pattern"
-	"github.com/jedib0t/go-sudoku/writer"
+	"github.com/jedib0t/go-sudoku/variants/jigsaw"
+	"github.com/jedib0t/go-sudoku/variants/samurai"
 )
 
 var (
@@ -33,7 +32,6 @@ var (
 	formats      = strings.ToLower(strings.Join([]string{"csv", "table"}, "/"))
 	patterns     = strings.ToLower(strings.Join(pattern.Names(), "/"))
 	seed         = int64(0)
-	themes       = strings.ToLower(strings.Join(writer.Themes(), "/"))
 	types        = strings.Join([]string{typeDefault, typeJigSaw, typeSamurai}, "/")
 
 	// flags
@@ -47,8 +45,11 @@ var (
 	flagPattern    = flag.String("pattern", "", "Pattern to use instead of Difficulty ("+patterns+")")
 	flagProgress   = flag.Bool("progress", false, "Show progress in real-time with an artificial delay?")
 	flagSeed       = flag.Int64("seed", 0, "RNG Seed (0 => random number based on time) [$SEED]")
-	flagTheme      = flag.String("theme", "none", "Table formatting theme ("+themes+")")
 	flagType       = flag.String("type", "default", "Sudoku Type ("+types+")")
+
+	// state
+	showProgressLinesShown = 0
+	showProgressInterval   = time.Millisecond * 25
 
 	// version
 	version = "dev"
@@ -124,7 +125,7 @@ func generateSudoku() {
 	case "csv":
 		fmt.Println(grid)
 	default:
-		renderGeneratedResult(mode, writer.Render(grid))
+		renderGeneratedResult(mode, sudoku.Render(grid))
 	}
 }
 
@@ -144,7 +145,7 @@ func generateJigSawSudoku() {
 	case "csv":
 		fmt.Println(grid)
 	default:
-		renderGeneratedResult(fmt.Sprintf("JigSaw %s", mode), writer.RenderJigSaw(grid))
+		renderGeneratedResult(fmt.Sprintf("JigSaw %s", mode), jigsaw.Render(grid))
 	}
 }
 
@@ -158,9 +159,9 @@ func generateSamuraiSudoku() {
 	}
 	if *flagDebug {
 		tw := table.NewWriter()
-		tw.AppendRow(table.Row{writer.Render(grids[1]), " ", writer.Render(grids[2])})
-		tw.AppendRow(table.Row{" ", writer.Render(grids[0]), " "})
-		tw.AppendRow(table.Row{writer.Render(grids[3]), " ", writer.Render(grids[4])})
+		tw.AppendRow(table.Row{sudoku.Render(grids[1]), " ", sudoku.Render(grids[2])})
+		tw.AppendRow(table.Row{" ", sudoku.Render(grids[0]), " "})
+		tw.AppendRow(table.Row{sudoku.Render(grids[3]), " ", sudoku.Render(grids[4])})
 		tw.SetStyle(table.StyleLight)
 		tw.Style().Options.SeparateRows = true
 		_, _ = fmt.Fprintln(os.Stderr, tw.Render())
@@ -169,7 +170,7 @@ func generateSamuraiSudoku() {
 	mode := applyPatternOrDifficulty(grids...)
 
 	// render
-	samuraiSudoku, err := writer.RenderSamurai(grids)
+	samuraiSudoku, err := samurai.Render(grids)
 	if err != nil {
 		logErrorAndExit("failed to generate sudoku with %s method: %v", gen.Name(), err)
 	}
@@ -204,7 +205,7 @@ func getGenerator() generator.Generator {
 		opts = append(opts, generator.WithDebug())
 	}
 	if *flagProgress && isInteractiveTerminal() {
-		opts = append(opts, generator.WithProgress())
+		opts = append(opts, generator.WithProgress(renderProgress))
 	}
 
 	switch strings.ToLower(*flagAlgorithm) {
@@ -239,7 +240,6 @@ func initStuff() {
 		text.DisableColors()
 	}
 	generator.Seed(getSeed())
-	writer.SetTheme(strings.ToLower(*flagTheme))
 }
 
 func isInteractiveTerminal() bool {
@@ -311,6 +311,41 @@ func renderGeneratedResult(title string, result string) {
 	fmt.Println(tw.Render())
 }
 
+func renderProgress(g, og *sudoku.Grid, attempts, cycles int) {
+	for showProgressLinesShown > 0 {
+		fmt.Print(text.CursorUp.Sprint())
+		fmt.Print(text.EraseLine.Sprint())
+		showProgressLinesShown--
+	}
+
+	tw := table.NewWriter()
+	tw.SetStyle(table.StyleBold)
+	switch g.GetMetadata("type") {
+	case "jigsaw":
+		if og == nil {
+			tw.AppendRow(table.Row{jigsaw.Render(g)})
+		} else {
+			tw.AppendRow(table.Row{jigsaw.RenderDiff(g, og)})
+		}
+	default:
+		if og == nil {
+			tw.AppendRow(table.Row{sudoku.Render(g)})
+		} else {
+			tw.AppendRow(table.Row{sudoku.RenderDiff(g, og)})
+		}
+	}
+	tw.AppendFooter(table.Row{fmt.Sprintf("Attempt # %d.%d", attempts, cycles)})
+	tw.SetColumnConfigs([]table.ColumnConfig{
+		{Number: 1, AlignHeader: text.AlignCenter, AlignFooter: text.AlignCenter},
+	})
+	tw.Style().Format.Footer = text.FormatDefault
+	out := tw.Render()
+
+	fmt.Println(out)
+	showProgressLinesShown = strings.Count(out, "\n") + 1
+	time.Sleep(showProgressInterval)
+}
+
 func solveSudoku() {
 	gen := getGenerator()
 	rng := rand.New(rand.NewSource(getSeed()))
@@ -331,7 +366,7 @@ func solveSudoku() {
 	// render input and output
 	tw := table.NewWriter()
 	tw.AppendHeader(table.Row{"Input", "Output"})
-	tw.AppendRow(table.Row{writer.Render(grid), writer.RenderDiff(gridSolved, grid)})
+	tw.AppendRow(table.Row{sudoku.Render(grid), sudoku.RenderDiff(gridSolved, grid)})
 	tw.AppendFooter(table.Row{
 		fmt.Sprintf("%d blocks to solve", grid.CountToDo()),
 		fmt.Sprintf("%v cycles", gridSolved.GetMetadata("cycles")),
