@@ -7,11 +7,11 @@ import (
 
 var (
 	difficultyNameMap = map[Difficulty]string{
-		None:   "none",
-		Easy:   "easy",
-		Medium: "medium",
-		Hard:   "hard",
-		Insane: "insane",
+		None:   "None",
+		Easy:   "Easy",
+		Medium: "Medium",
+		Hard:   "Hard",
+		Insane: "Insane",
 	}
 )
 
@@ -46,7 +46,7 @@ func (d Difficulty) String() string {
 func From(str string) Difficulty {
 	strLower := strings.ToLower(str)
 	for k, v := range difficultyNameMap {
-		if v == strLower {
+		if strings.ToLower(v) == strLower {
 			return k
 		}
 	}

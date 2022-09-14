@@ -38,5 +38,5 @@ $ ./go-sudoku-generator -type samurai generate
 to keep the results reproducible.*
 ```
 ## generate a new puzzle and feed it to the solver to solve
-$ ./go-sudoku -format csv generate | ./go-sudoku solve
+$ ./go-sudoku-generator -format csv generate | ./go-sudoku-generator solve
 ```

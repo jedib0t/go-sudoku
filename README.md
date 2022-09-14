@@ -15,7 +15,22 @@ GoLang.
 ### Game
 ```
 $ ./go-sudoku -help
-It works!
+go-sudoku: A GoLang implementation of the Sudoku game.
+
+Version: dev
+
+Flags
+=====
+  -demo
+    	play automatically? (this cheats to win)
+  -difficulty string
+    	Difficulty (none/easy/medium/hard/insane) (default "medium")
+  -help
+    	Show this help-text?
+  -refresh-rate int
+    	Refresh-rate per second (default 20)
+  -seed int
+    	Randomizer Seed value (will use current time if ZERO)
 ```
 
 ### Generator
@@ -90,7 +105,7 @@ $ ./go-sudoku-generator -type samurai generate
 ┃     6  2 │         │    1    │ 9  2    │         │    3    │    1  2  ┃
 ┃  4     5 │         │       2 │         │         │ 5     2 │    8  6  ┃
 ┃ ─────────┴─────────┼─────────┼─────────┼─────────┼─────────┴───────── ┃
-┃                    │                   │    7  3 │                    ┃
+┃                    │         │         │    7  3 │                    ┃
 ┃                    │         │ 4     2 │ 5       │                    ┃
 ┃                    │ 7       │    3  9 │    2  8 │                    ┃
 ┃ ─────────┬─────────┼─────────┼─────────┼─────────┼─────────┬───────── ┃
@@ -115,6 +130,22 @@ $ ./go-sudoku-generator -type samurai generate
 to keep the results reproducible.*
 ```
 ## generate a new puzzle and feed it to the solver to solve
-$ ./go-sudoku -format csv generate | ./go-sudoku solve
-It works!
+$ ./go-sudoku-generator -format csv generate | ./go-sudoku-generator solve
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃             INPUT             ┃             OUTPUT            ┃
+┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
+┃     8  5 │    6    │ 2     1  ┃  9  8  5 │ 7  6  4 │ 2  3  1  ┃
+┃        7 │ 9  2    │          ┃  4  1  7 │ 9  2  3 │ 8  6  5  ┃
+┃  6  3    │    5  1 │       4  ┃  6  3  2 │ 8  5  1 │ 7  9  4  ┃
+┃ ─────────┼─────────┼───────── ┃ ─────────┼─────────┼───────── ┃
+┃  2       │       8 │ 6  7     ┃  2  4  9 │ 5  1  8 │ 6  7  3  ┃
+┃          │       2 │       9  ┃  8  6  3 │ 4  7  2 │ 5  1  9  ┃
+┃     5    │    3  9 │          ┃  7  5  1 │ 6  3  9 │ 4  2  8  ┃
+┃ ─────────┼─────────┼───────── ┃ ─────────┼─────────┼───────── ┃
+┃  1  2  8 │       6 │ 9  5     ┃  1  2  8 │ 3  4  6 │ 9  5  7  ┃
+┃  3  7  4 │ 2  9    │          ┃  3  7  4 │ 2  9  5 │ 1  8  6  ┃
+┃  5       │ 1     7 │          ┃  5  9  6 │ 1  8  7 │ 3  4  2  ┃
+┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
+┃       45 blocks to solve      ┃          3621 cycles          ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 ```
