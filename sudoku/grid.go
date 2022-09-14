@@ -130,20 +130,33 @@ func (g *Grid) CopySubGrid(srcGrid *Grid, srcLoc, dstLoc Location) error {
 
 // Count returns the number of Blocks that are filled and has a value.
 func (g Grid) Count() int {
-	done := 0
+	count := 0
 	for row := range gridIdxRange {
 		for col := range gridIdxRange {
 			if g.grid[row][col].Value() > 0 {
-				done++
+				count++
 			}
 		}
 	}
-	return done
+	return count
+}
+
+// CountValue returns the number of Blocks that are filled with the given value.
+func (g Grid) CountValue(n int) int {
+	count := 0
+	for row := range gridIdxRange {
+		for col := range gridIdxRange {
+			if g.grid[row][col].Value() == n {
+				count++
+			}
+		}
+	}
+	return count
 }
 
 // CountToDo returns the number of blocks that are not filled and has 0 value.
 func (g Grid) CountToDo() int {
-	return 81 - g.Count()
+	return (len(gridIdxRange) * len(gridIdxRange)) - g.Count()
 }
 
 // Done returns true if all Blocks are filled.

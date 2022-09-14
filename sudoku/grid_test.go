@@ -111,6 +111,12 @@ func TestGrid_Count(t *testing.T) {
 	assert.Equal(t, 36, testGridPartial.Count())
 }
 
+func TestGrid_CountValue(t *testing.T) {
+	assert.Equal(t, 9, testGridDone.CountValue(9))
+	assert.Equal(t, 0, testGridEmpty.CountValue(9))
+	assert.Equal(t, 5, testGridPartial.CountValue(9))
+}
+
 func TestGrid_CountToDo(t *testing.T) {
 	assert.Equal(t, 0, testGridDone.CountToDo())
 	assert.Equal(t, 81, testGridEmpty.CountToDo())

@@ -110,14 +110,16 @@ func getUserInput() {
 			grid.Reset(cursor.X, cursor.Y)
 		}
 	default:
-		if char == 'q' || char == 'Q' {
+		if char == 'h' || char == 'H' {
+			handleActionHelp()
+		} else if char == 'q' || char == 'Q' {
 			handleActionQuit()
 		} else if char >= '1' && char <= '9' {
 			charNum, _ := strconv.Atoi(string(char))
 			if charNum >= 1 && charNum <= 9 {
 				errorStr = ""
 				if !grid.IsSet(cursor.X, cursor.Y) {
-					if gridAnswer.Get(cursor.X, cursor.Y) != charNum {
+					if !*flagAllowWrong && gridAnswer.Get(cursor.X, cursor.Y) != charNum {
 						errorStr = fmt.Sprintf("%d is not right @(%d, %d)", charNum, cursor.X+1, cursor.Y+1)
 					} else if !grid.Set(cursor.X, cursor.Y, charNum) {
 						errorStr = fmt.Sprintf("%d does not fit @(%d, %d)", charNum, cursor.X+1, cursor.Y+1)

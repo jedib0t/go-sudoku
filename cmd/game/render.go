@@ -14,11 +14,14 @@ import (
 var (
 	// colors
 	colorNumbers = map[string][3]text.Colors{ // bg1 color, bg2 color, letter color
-		"answer": {{text.FgBlack}, {text.BgBlack}, {text.FgHiCyan, text.Italic}},
-		"bad":    {{text.FgBlack}, {text.BgBlack}, {text.FgHiRed}},
-		"cursor": {{text.FgMagenta}, {text.BgMagenta}, {text.FgBlack}},
-		"key":    {{text.FgBlack}, {text.BgBlack}, {text.FgHiWhite}},
-		"og":     {{text.FgBlack}, {text.BgBlack}, {text.FgWhite}},
+		"answer":   {{text.FgBlack}, {text.BgBlack}, {text.FgHiCyan, text.Italic}},
+		"bad":      {{text.FgBlack}, {text.BgBlack}, {text.FgHiRed}},
+		"cursor":   {{text.FgBlue}, {text.BgBlue}, {text.FgBlack}},
+		"key":      {{text.FgBlack}, {text.BgBlack}, {text.FgHiWhite}},
+		"key.done": {{text.FgBlack}, {text.BgBlack}, {text.FgHiBlack}},
+		"key.hint": {{text.FgBlack}, {text.BgBlack}, {text.FgHiCyan, text.Italic}},
+		"og":       {{text.FgBlack}, {text.BgBlack}, {text.FgWhite}},
+		"selected": {{text.FgGreen}, {text.BgGreen}, {text.FgHiWhite}},
 	}
 	styleDefault = table.StyleColoredBlueWhiteOnBlack
 	styleSuccess = table.StyleColoredGreenWhiteOnBlack
@@ -96,23 +99,26 @@ func renderGrid() string {
 
 	tw := table.NewWriter()
 	twRow := table.Row{}
+	valCursor := grid.Get(cursor.X, cursor.Y)
 	for _, loc := range sgLocations {
 		twSG := table.NewWriter()
-
 		sg := grid.SubGrid(loc.X, loc.Y)
+
 		var row table.Row
 		for idx, loc := range sg.Locations {
 			val := grid.Get(loc.X, loc.Y)
 			valAnswer := gridAnswer.Get(loc.X, loc.Y)
 			valOG := gridOG.Get(loc.X, loc.Y)
 
-			colors := colorNumbers["bad"]
+			colors := colorNumbers["answer"]
 			if val == 0 {
 				colors = colorNumbers["key"]
+			} else if val == valCursor {
+				colors = colorNumbers["selected"]
 			} else if val == valOG {
 				colors = colorNumbers["og"]
-			} else if val == valAnswer {
-				colors = colorNumbers["answer"]
+			} else if val != valAnswer && *flagShowWrong {
+				colors = colorNumbers["bad"]
 			}
 			if cursor == loc {
 				colors[0] = colorNumbers["cursor"][0]

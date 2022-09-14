@@ -25,7 +25,7 @@ const (
 
 var (
 	colorError     = text.Colors{text.BgRed, text.FgBlack, text.Italic}
-	colorShortcuts = text.Colors{text.Italic, text.FgWhite}
+	colorShortcuts = text.Colors{text.Italic, text.FgWhite, text.Faint}
 	colorTitle     = []text.Color{
 		text.FgHiWhite,
 		text.FgHiYellow,
@@ -79,10 +79,23 @@ func renderKey(n int, colors [3]text.Colors) string {
 }
 
 func renderKeyboard() string {
+	var hints map[int]bool
+	if *flagHints {
+		if p := grid.Possibilities(cursor.X, cursor.Y); p != nil {
+			hints = p.AvailableMap()
+		}
+	}
+
 	tw := table.NewWriter()
 	row := table.Row{}
-	for idx := 1; idx <= 9; idx++ {
-		row = append(row, renderKey(idx, colorNumbers["key"]))
+	for n := 1; n <= 9; n++ {
+		colors := colorNumbers["key"]
+		if grid.CountValue(n) == 9 {
+			colors = colorNumbers["key.done"]
+		} else if hints[n] {
+			colors = colorNumbers["key.hint"]
+		}
+		row = append(row, renderKey(n, colors))
 	}
 	tw.AppendRow(row)
 	tw.Style().Options = table.OptionsNoBordersAndSeparators
@@ -90,7 +103,7 @@ func renderKeyboard() string {
 }
 
 func renderShortcuts() string {
-	return colorShortcuts.Sprint("insert: 1-9 | navigate: ▶ ▲ ▼ ◀  | quit: <Q/q>")
+	return colorShortcuts.Sprint("help: <H/h> | navigate: ▶ ▲ ▼ ◀  | quit: <Q/q>")
 }
 
 func renderStats() string {
