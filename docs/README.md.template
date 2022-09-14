@@ -1,7 +1,7 @@
 # go-sudoku
 <!----------------------------------------------------------------------------------------------------------------------
--- Please note that this file is auto-generated using the 'scripts/generate_readme.sh' script. Changes to this file will
--- be over-written in the next build. If you need to change this file, make the changes to 'scripts/README.md.template'
+-- Please note that this file is auto-generated using the 'docs/generate_readme.sh' script. Changes to this file will
+-- be over-written in the next build. If you need to change this file, make the changes to 'docs/README.md.template'
 -- instead.
 ---------------------------------------------------------------------------------------------------------------------->
 
@@ -10,14 +10,22 @@
 An implementation of Sudoku game, generators and solvers for the command line in
 GoLang.
 
-## Usage
+# Install
 
-### Game
+You can download the latest release for your OS [here](https://github.com/jedib0t/go-sudoku/releases/latest).
+
+## Screenshot
+
+<img src="docs/game.png" alt="Game"/>
+
+# Usage
+
+## Game
 ```
 $ ./go-sudoku -help
 ```
 
-### Generator
+## Generator
 *Note: all the commands below were run with the environment variable `SEED=42`
 to keep the results reproducible.*
 ```
@@ -33,7 +41,7 @@ $ ./go-sudoku-generator -pattern diamond generate
 $ ./go-sudoku-generator -type samurai generate
 ```
 
-### Solver
+## Solver
 *Note: all the commands below were run with the environment variable `SEED=42`
 to keep the results reproducible.*
 ```

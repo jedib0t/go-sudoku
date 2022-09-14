@@ -8,6 +8,7 @@ import (
 var (
 	difficultyNameMap = map[Difficulty]string{
 		None:   "None",
+		Kids:   "Kids",
 		Easy:   "Easy",
 		Medium: "Medium",
 		Hard:   "Hard",
@@ -22,11 +23,23 @@ type Difficulty int
 // Available Difficulty values.
 const (
 	None   Difficulty = 81
+	Kids   Difficulty = 63
 	Easy   Difficulty = 45
 	Medium Difficulty = 36
 	Hard   Difficulty = 27
 	Insane Difficulty = 13
 )
+
+// Names returns the names of all supported difficulties.
+func Names() []string {
+	var rsp []string
+	for idx := None; idx > 0; idx-- {
+		if name, ok := difficultyNameMap[idx]; ok {
+			rsp = append(rsp, name)
+		}
+	}
+	return rsp
+}
 
 // BlocksFilled returns the # of blocks that need to be filled to qualify for
 // that difficulty mode.

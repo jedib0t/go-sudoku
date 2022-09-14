@@ -8,16 +8,20 @@ import (
 	"time"
 
 	"github.com/eiannone/keyboard"
+	"github.com/jedib0t/go-pretty/v6/text"
 	"github.com/jedib0t/go-sudoku/generator"
 	"github.com/jedib0t/go-sudoku/sudoku"
 	"github.com/jedib0t/go-sudoku/sudoku/difficulty"
+	"github.com/jedib0t/go-sudoku/sudoku/pattern"
 )
 
 var (
 	// game state
 	cursor     = sudoku.Location{X: 0, Y: 0}
-	diff       difficulty.Difficulty
 	errorStr   = ""
+	gameDiff   difficulty.Difficulty
+	gamePtrn   *pattern.Pattern
+	gameMode   string
 	grid       *sudoku.Grid // gridAnswer + difficulty applied
 	gridAnswer *sudoku.Grid // contains all the locations filled
 	gridOG     *sudoku.Grid // (==gridAnswer) for keeping track of user progress
@@ -64,14 +68,29 @@ func generateSudoku() {
 	g := generator.BackTrackingGenerator(
 		generator.WithRNG(rng),
 	)
+
 	var err error
 	gridAnswer, err = g.Generate(nil)
 	if err != nil {
 		panic(err)
 	}
 	grid = gridAnswer.Clone()
-	grid.ApplyDifficulty(diff)
+
+	// apply pattern or difficulty
+	if gamePtrn != nil {
+		grid.ApplyPattern(gamePtrn)
+	} else {
+		grid.ApplyDifficulty(gameDiff)
+	}
+	// clone the grid to show answers/values-at-beginning
 	gridOG = grid.Clone()
+
+	// store the "mode" for display
+	gameMode = gameDiff.String()
+	if *flagPattern != "" {
+		gameMode = text.FormatTitle.Apply(*flagPattern)
+	}
+	gameMode += fmt.Sprintf("[%d]", *flagSeed)
 }
 
 func getUserInput() {
@@ -120,7 +139,7 @@ func getUserInput() {
 				errorStr = ""
 				if !grid.IsSet(cursor.X, cursor.Y) {
 					if !*flagAllowWrong && gridAnswer.Get(cursor.X, cursor.Y) != charNum {
-						errorStr = fmt.Sprintf("%d is not right @(%d, %d)", charNum, cursor.X+1, cursor.Y+1)
+						errorStr = fmt.Sprintf("%d is incorrect @(%d, %d)", charNum, cursor.X+1, cursor.Y+1)
 					} else if !grid.Set(cursor.X, cursor.Y, charNum) {
 						errorStr = fmt.Sprintf("%d does not fit @(%d, %d)", charNum, cursor.X+1, cursor.Y+1)
 					}

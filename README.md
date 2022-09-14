@@ -1,7 +1,7 @@
 # go-sudoku
 <!----------------------------------------------------------------------------------------------------------------------
--- Please note that this file is auto-generated using the 'scripts/generate_readme.sh' script. Changes to this file will
--- be over-written in the next build. If you need to change this file, make the changes to 'scripts/README.md.template'
+-- Please note that this file is auto-generated using the 'docs/generate_readme.sh' script. Changes to this file will
+-- be over-written in the next build. If you need to change this file, make the changes to 'docs/README.md.template'
 -- instead.
 ---------------------------------------------------------------------------------------------------------------------->
 
@@ -10,9 +10,17 @@
 An implementation of Sudoku game, generators and solvers for the command line in
 GoLang.
 
-## Usage
+# Install
 
-### Game
+You can download the latest release for your OS [here](https://github.com/jedib0t/go-sudoku/releases/latest).
+
+## Screenshot
+
+<img src="docs/game.png" alt="Game"/>
+
+# Usage
+
+## Game
 ```
 $ ./go-sudoku -help
 go-sudoku: A GoLang implementation of the Sudoku game.
@@ -21,19 +29,27 @@ Version: dev
 
 Flags
 =====
+  -allow-wrong
+    	Allow incorrect values?
   -demo
     	play automatically? (this cheats to win)
   -difficulty string
-    	Difficulty (none/easy/medium/hard/insane) (default "medium")
+    	Difficulty (none/kids/easy/medium/hard/insane) (default "medium")
   -help
     	Show this help-text?
+  -hints
+    	Highlight possible values in the Keyboard?
+  -pattern string
+    	Pattern to use instead of Difficulty (diamond/octagon/square/star/target/triangle)
   -refresh-rate int
     	Refresh-rate per second (default 20)
   -seed int
-    	Randomizer Seed value (will use current time if ZERO)
+    	Randomizer Seed value (will use random number if ZERO)
+  -show-wrong
+    	Highlight incorrect values in Red?
 ```
 
-### Generator
+## Generator
 *Note: all the commands below were run with the environment variable `SEED=42`
 to keep the results reproducible.*
 ```
@@ -125,7 +141,7 @@ $ ./go-sudoku-generator -type samurai generate
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 ```
 
-### Solver
+## Solver
 *Note: all the commands below were run with the environment variable `SEED=42`
 to keep the results reproducible.*
 ```

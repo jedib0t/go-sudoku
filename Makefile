@@ -48,7 +48,7 @@ fmt: tidy
 gen: gen-readme
 
 gen-readme: build
-	./scripts/generate_readme.sh > README.md
+	./docs/generate_readme.sh > README.md
 
 get-tools:
 	go install github.com/mitchellh/gox@v1.0.1

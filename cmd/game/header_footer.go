@@ -38,6 +38,7 @@ var (
 	colorTitleAnimated = false
 	colorTitleIdx      = 0
 	colorTitleOnce     = sync.Once{}
+	statLens           = []int{14, 26, 10}
 
 	titleOnce sync.Once
 )
@@ -107,21 +108,20 @@ func renderShortcuts() string {
 }
 
 func renderStats() string {
-	difficulty := text.FormatTitle.Apply(diff.String())
 	timeGame := time.Now().Sub(timeStart)
 	timeGameStr := fmt.Sprintf("%02d:%02d:%02d",
-		int(timeGame.Hours()), int(timeGame.Minutes()), int(timeGame.Seconds()))
+		int(timeGame.Hours()), int(timeGame.Minutes())%60, int(timeGame.Seconds())%60)
 	errorMsg := ""
 	if errorStr != "" {
-		errorMsg = colorError.Sprint(text.AlignCenter.Apply(errorStr, 30))
+		errorMsg = colorError.Sprint(text.AlignCenter.Apply(errorStr, statLens[1]))
 	}
 
 	tw := table.NewWriter()
-	tw.AppendRow(table.Row{difficulty, errorMsg, timeGameStr})
+	tw.AppendRow(table.Row{gameMode, errorMsg, timeGameStr})
 	tw.SetColumnConfigs([]table.ColumnConfig{
-		{Number: 1, Align: text.AlignLeft, WidthMin: 9, WidthMax: 9, WidthMaxEnforcer: text.Trim},
-		{Number: 2, Align: text.AlignCenter, WidthMin: 30, WidthMax: 30, WidthMaxEnforcer: text.Trim},
-		{Number: 3, Align: text.AlignRight, WidthMin: 10, WidthMax: 10, WidthMaxEnforcer: text.Trim},
+		{Number: 1, Align: text.AlignLeft, WidthMin: statLens[0], WidthMax: statLens[0], WidthMaxEnforcer: text.Trim},
+		{Number: 2, Align: text.AlignCenter, WidthMin: statLens[1], WidthMax: statLens[1], WidthMaxEnforcer: text.Trim},
+		{Number: 3, Align: text.AlignRight, WidthMin: statLens[2], WidthMax: statLens[2], WidthMaxEnforcer: text.Trim},
 	})
 	tw.Style().Box.PaddingLeft = ""
 	tw.Style().Box.PaddingRight = ""
@@ -129,6 +129,7 @@ func renderStats() string {
 	tw.Style().Options.SeparateColumns = false
 	return tw.Render()
 }
+
 func renderTitle() string {
 	colors := text.Colors{colorTitle[colorTitleIdx], text.Bold}
 	tw := table.NewWriter()
