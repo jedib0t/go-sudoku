@@ -1,6 +1,19 @@
 package difficulty
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
+
+var (
+	difficultyNameMap = map[Difficulty]string{
+		None:   "none",
+		Easy:   "easy",
+		Medium: "medium",
+		Hard:   "hard",
+		Insane: "insane",
+	}
+)
 
 // Difficulty defines the number of clues available in the Sudoku puzzle. The
 // value corresponds to the number of blocks that are pre-filled.
@@ -23,18 +36,19 @@ func (d Difficulty) BlocksFilled() int {
 
 // String returns a human-readable name for the Difficulty.
 func (d Difficulty) String() string {
-	switch d {
-	case None:
-		return "None"
-	case Easy:
-		return "Easy"
-	case Medium:
-		return "Medium"
-	case Hard:
-		return "Hard"
-	case Insane:
-		return "Insane"
-	default:
-		return fmt.Sprintf("Custom[%d]", d)
+	if name, ok := difficultyNameMap[d]; ok && name != "" {
+		return name
 	}
+	return fmt.Sprintf("Custom[%d]", d)
+}
+
+// From interprets the given difficulty in string form to the actual enum value.
+func From(str string) Difficulty {
+	strLower := strings.ToLower(str)
+	for k, v := range difficultyNameMap {
+		if v == strLower {
+			return k
+		}
+	}
+	return Medium
 }

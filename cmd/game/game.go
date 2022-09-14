@@ -1,16 +1,30 @@
 package main
 
 import (
+	"fmt"
 	"math/rand"
+	"strconv"
 	"sync"
 	"time"
 
 	"github.com/eiannone/keyboard"
+	"github.com/jedib0t/go-sudoku/generator"
+	"github.com/jedib0t/go-sudoku/sudoku"
+	"github.com/jedib0t/go-sudoku/sudoku/difficulty"
 )
 
 var (
 	// game state
-	userQuit = false
+	cursor     = sudoku.Location{X: 0, Y: 0}
+	diff       difficulty.Difficulty
+	errorStr   = ""
+	grid       *sudoku.Grid // gridAnswer + difficulty applied
+	gridAnswer *sudoku.Grid // contains all the locations filled
+	gridOG     *sudoku.Grid // (==gridAnswer) for keeping track of user progress
+	userQuit   = false
+
+	// utils
+	rng *rand.Rand
 
 	// demo
 	demoRNG   = rand.New(rand.NewSource(1))
@@ -26,7 +40,7 @@ func play() {
 	go renderAsync(chStop, &wg)
 
 	for {
-		if true {
+		if grid.Done() || userQuit {
 			break
 		}
 
@@ -47,7 +61,17 @@ func demo() {
 }
 
 func generateSudoku() {
-
+	g := generator.BackTrackingGenerator(
+		generator.WithRNG(rng),
+	)
+	var err error
+	gridAnswer, err = g.Generate(nil)
+	if err != nil {
+		panic(err)
+	}
+	grid = gridAnswer.Clone()
+	grid.ApplyDifficulty(diff)
+	gridOG = grid.Clone()
 }
 
 func getUserInput() {
@@ -65,18 +89,41 @@ func getUserInput() {
 	case keyboard.KeyCtrlR:
 		handleActionReset()
 	case keyboard.KeyArrowDown:
-		// TODO
+		if cursor.X+1 < 9 {
+			cursor.X++
+		}
 	case keyboard.KeyArrowUp:
-		// TODO
+		if cursor.X-1 >= 0 {
+			cursor.X--
+		}
 	case keyboard.KeyArrowRight:
-		// TODO
+		if cursor.Y+1 < 9 {
+			cursor.Y++
+		}
 	case keyboard.KeyArrowLeft:
-		// TODO
-	case keyboard.KeySpace:
-		// TODO
+		if cursor.Y-1 >= 0 {
+			cursor.Y--
+		}
+	case keyboard.KeyBackspace, keyboard.KeyBackspace2, keyboard.KeyDelete:
+		errorStr = ""
+		if grid.IsSet(cursor.X, cursor.Y) && !gridOG.IsSet(cursor.X, cursor.Y) {
+			grid.Reset(cursor.X, cursor.Y)
+		}
 	default:
 		if char == 'q' || char == 'Q' {
 			handleActionQuit()
+		} else if char >= '1' && char <= '9' {
+			charNum, _ := strconv.Atoi(string(char))
+			if charNum >= 1 && charNum <= 9 {
+				errorStr = ""
+				if !grid.IsSet(cursor.X, cursor.Y) {
+					if gridAnswer.Get(cursor.X, cursor.Y) != charNum {
+						errorStr = fmt.Sprintf("%d is not right @(%d, %d)", charNum, cursor.X+1, cursor.Y+1)
+					} else if !grid.Set(cursor.X, cursor.Y, charNum) {
+						errorStr = fmt.Sprintf("%d does not fit @(%d, %d)", charNum, cursor.X+1, cursor.Y+1)
+					}
+				}
+			}
 		} else {
 			handleActionInput(char)
 		}

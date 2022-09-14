@@ -87,7 +87,7 @@ func main() {
 }
 
 func applyPatternOrDifficulty(grids ...*sudoku.Grid) string {
-	diff := getDifficulty()
+	diff := difficulty.From(*flagDifficulty)
 	ptrn := pattern.Get(*flagPattern)
 
 	// apply pattern or diff

@@ -8,11 +8,20 @@ import (
 
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/jedib0t/go-pretty/v6/text"
+	"github.com/jedib0t/go-sudoku/sudoku"
 )
 
 var (
 	// colors
-	colorsFlaggedWrong = text.Colors{text.FgHiRed}
+	colorNumbers = map[string][3]text.Colors{ // bg1 color, bg2 color, letter color
+		"answer": {{text.FgBlack}, {text.BgBlack}, {text.FgHiCyan, text.Italic}},
+		"bad":    {{text.FgBlack}, {text.BgBlack}, {text.FgHiRed}},
+		"cursor": {{text.FgMagenta}, {text.BgMagenta}, {text.FgBlack}},
+		"key":    {{text.FgBlack}, {text.BgBlack}, {text.FgHiWhite}},
+		"og":     {{text.FgBlack}, {text.BgBlack}, {text.FgWhite}},
+	}
+	styleDefault = table.StyleColoredBlueWhiteOnBlack
+	styleSuccess = table.StyleColoredGreenWhiteOnBlack
 
 	// misc
 	linesRendered = 0
@@ -44,16 +53,23 @@ func renderGame() {
 		return
 	}
 
+	style := styleDefault
+	if grid.Done() {
+		style = styleSuccess
+	}
+
 	tw := table.NewWriter()
-	tw.AppendHeader(table.Row{renderTitle()})
-	tw.AppendHeader(table.Row{renderHeader()})
-	tw.AppendRow(table.Row{renderSudoku()})
-	tw.AppendFooter(table.Row{renderFooter()})
+	tw.SetTitle(renderTitle() + "\n")
+	tw.AppendHeader(table.Row{renderStats()})
+	tw.AppendRow(table.Row{renderGrid()})
+	tw.AppendFooter(table.Row{renderKeyboard()})
+	tw.AppendFooter(table.Row{renderShortcuts() + "\n"})
 	tw.SetColumnConfigs([]table.ColumnConfig{
 		{Number: 1, Align: text.AlignCenter, AlignHeader: text.AlignCenter, AlignFooter: text.AlignCenter},
 	})
-	tw.SetStyle(table.StyleBold)
-	tw.Style().Options.SeparateRows = true
+	tw.SetStyle(style)
+	tw.Style().Options.SeparateRows = false
+	tw.Style().Format.Header = text.FormatDefault
 	tw.Style().Format.Footer = text.FormatDefault
 	tw.Style().Title.Align = text.AlignCenter
 
@@ -71,6 +87,56 @@ func renderGame() {
 	}
 }
 
-func renderSudoku() string {
-	return "sudoku game grid goes here and will\nbe the most amazing thing ever"
+func renderGrid() string {
+	sgLocations := [9]sudoku.Location{
+		{X: 0, Y: 0}, {X: 0, Y: 3}, {X: 0, Y: 6},
+		{X: 3, Y: 0}, {X: 3, Y: 3}, {X: 3, Y: 6},
+		{X: 6, Y: 0}, {X: 6, Y: 3}, {X: 6, Y: 6},
+	}
+
+	tw := table.NewWriter()
+	twRow := table.Row{}
+	for _, loc := range sgLocations {
+		twSG := table.NewWriter()
+
+		sg := grid.SubGrid(loc.X, loc.Y)
+		var row table.Row
+		for idx, loc := range sg.Locations {
+			val := grid.Get(loc.X, loc.Y)
+			valAnswer := gridAnswer.Get(loc.X, loc.Y)
+			valOG := gridOG.Get(loc.X, loc.Y)
+
+			colors := colorNumbers["bad"]
+			if val == 0 {
+				colors = colorNumbers["key"]
+			} else if val == valOG {
+				colors = colorNumbers["og"]
+			} else if val == valAnswer {
+				colors = colorNumbers["answer"]
+			}
+			if cursor == loc {
+				colors[0] = colorNumbers["cursor"][0]
+				colors[1] = colorNumbers["cursor"][1]
+			}
+			row = append(row, renderKey(val, colors))
+
+			if (idx+1)%3 == 0 {
+				twSG.AppendRow(row)
+				row = table.Row{}
+			}
+		}
+		twSG.Style().Options = table.OptionsNoBordersAndSeparators
+		twRow = append(twRow, twSG.Render())
+
+		if len(twRow) == 3 {
+			tw.AppendRow(twRow)
+			tw.AppendSeparator()
+			twRow = table.Row{}
+		}
+	}
+	tw.SetStyle(table.StyleLight)
+	tw.Style().Options.DrawBorder = true
+	tw.Style().Box.PaddingLeft = ""
+	tw.Style().Box.PaddingRight = ""
+	return tw.Render()
 }
