@@ -23,7 +23,7 @@ demo-generator: build-generator
 	./go-sudoku-generator -type jigsaw generate
 	./go-sudoku-generator -type samurai generate
 
-demo-solve: build-generator
+demo-solver: build-generator
 	./go-sudoku-generator -format csv generate | ./go-sudoku-generator -progress solve
 
 dist: dist-game dist-generator
