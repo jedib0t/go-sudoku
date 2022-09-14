@@ -6,6 +6,10 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestNames(t *testing.T) {
+	assert.Equal(t, []string{"None", "Kids", "Easy", "Medium", "Hard", "Insane"}, Names())
+}
+
 func TestDifficulty_BlocksFilled(t *testing.T) {
 	assert.Equal(t, 42, Difficulty(42).BlocksFilled())
 	assert.Equal(t, int(None), None.BlocksFilled())

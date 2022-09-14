@@ -1,68 +1,59 @@
 # go-sudoku
 <!----------------------------------------------------------------------------------------------------------------------
--- Please note that this file is auto-generated using the 'scripts/generate_readme.sh' script. Changes to this file will
--- be over-written in the next build. If you need to change this file, make the changes to 'scripts/README.md.template'
+-- Please note that this file is auto-generated using the 'docs/generate_readme.sh' script. Changes to this file will
+-- be over-written in the next build. If you need to change this file, make the changes to 'docs/README.md.template'
 -- instead.
 ---------------------------------------------------------------------------------------------------------------------->
 
 [![Build Status](https://github.com/jedib0t/go-sudoku/workflows/CI/badge.svg?branch=main)](https://github.com/jedib0t/go-sudoku/actions?query=workflow%3ACI+event%3Apush+branch%3Amain)
 
-An implementation of Sudoku generators and solvers in GoLang.
+An implementation of Sudoku game, generators and solvers for the command line in
+GoLang.
 
-## Usage
+# Install
 
-### Help
+You can download the latest release for your OS [here](https://github.com/jedib0t/go-sudoku/releases/latest).
+
+## Screenshot
+
+<img src="docs/game.png" alt="Game"/>
+
+# Usage
+
+## Game
 ```
-$ ./go-sudoku --help
-go-sudoku: A GoLang based Sudoku generator and solver.
-
-Usage: go-sudoku [flags] <action>
+$ ./go-sudoku -help
+go-sudoku: A GoLang implementation of the Sudoku game.
 
 Version: dev
 
-Actions:
---------
-  * generate: Generate a Sudoku Grid and apply the specified difficulty on it
-  * solve: Solve a Sudoku puzzle provided in a text (CSV) file
-
-Examples:
----------
-  * ./go-sudoku
-  * ./go-sudoku -algorithm back-tracking -theme green -seed 42 generate
-  * ./go-sudoku -format csv generate
-  * ./go-sudoku -input puzzle.csv solve
-  * ./go-sudoku -difficulty hard -format csv generate | ./go-sudoku solve
-
-Optional Flags:
----------------
-  -algorithm string
-    	Algorithm (back-tracking/brute-force) (default "back-tracking")
-  -debug
-    	Enable Debug Logging?
+Flags
+=====
+  -allow-wrong
+    	Allow incorrect values?
+  -demo
+    	play automatically? (this cheats to win)
   -difficulty string
-    	Difficulty (none/easy/medium/hard/insane) (default "medium")
-  -format string
-    	Rendering Format (csv/table) (default "table")
+    	Difficulty (none/kids/easy/medium/hard/insane) (default "medium")
   -help
-    	Display this usage and help text
-  -input string
-    	File containing a Sudoku Puzzle in CSV format
-  -no-color
-    	Disable colors in rendering? [$NO_COLOR]
+    	Show this help-text?
+  -hints
+    	Highlight possible values in the Keyboard?
   -pattern string
     	Pattern to use instead of Difficulty (diamond/octagon/square/star/target/triangle)
-  -progress
-    	Show progress in real-time with an artificial delay?
+  -refresh-rate int
+    	Refresh-rate per second (default 20)
   -seed int
-    	RNG Seed (0 => random number based on time) [$SEED]
-  -type string
-    	Sudoku Type (default/jigsaw/samurai) (default "default")
+    	Randomizer Seed value (will use random number if ZERO)
+  -show-wrong
+    	Highlight incorrect values in Red?
 ```
 
-### Generator
-*Note: all the commands below were run with SEED=42 to keep the results reproducible.*
+## Generator
+*Note: all the commands below were run with the environment variable `SEED=42`
+to keep the results reproducible.*
 ```
-$ ./go-sudoku generate
+$ ./go-sudoku-generator generate
 ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
 ┃     8  5 │    6    │ 2     1  ┃
 ┃        7 │ 9  2    │          ┃
@@ -80,7 +71,7 @@ $ ./go-sudoku generate
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 
 ## custom difficulty
-$ ./go-sudoku -difficulty insane generate
+$ ./go-sudoku-generator -difficulty insane generate
 ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
 ┃     8    │    6    │ 2        ┃
 ┃          │         │          ┃
@@ -98,7 +89,7 @@ $ ./go-sudoku -difficulty insane generate
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 
 ## custom pattern
-$ ./go-sudoku -pattern diamond generate
+$ ./go-sudoku-generator -pattern diamond generate
 ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
 ┃          │    6    │          ┃
 ┃          │ 9  2  3 │          ┃
@@ -116,7 +107,7 @@ $ ./go-sudoku -pattern diamond generate
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 
 ## samurai sudoku
-$ ./go-sudoku -type samurai generate
+$ ./go-sudoku-generator -type samurai generate
 ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
 ┃     1    │    2  8 │ 5     6 │         │ 4  8    │    2  1 │          ┃
 ┃  5       │         │         │         │       9 │ 8  4  7 │    6  3  ┃
@@ -130,7 +121,7 @@ $ ./go-sudoku -type samurai generate
 ┃     6  2 │         │    1    │ 9  2    │         │    3    │    1  2  ┃
 ┃  4     5 │         │       2 │         │         │ 5     2 │    8  6  ┃
 ┃ ─────────┴─────────┼─────────┼─────────┼─────────┼─────────┴───────── ┃
-┃                    │                   │    7  3 │                    ┃
+┃                    │         │         │    7  3 │                    ┃
 ┃                    │         │ 4     2 │ 5       │                    ┃
 ┃                    │ 7       │    3  9 │    2  8 │                    ┃
 ┃ ─────────┬─────────┼─────────┼─────────┼─────────┼─────────┬───────── ┃
@@ -150,11 +141,12 @@ $ ./go-sudoku -type samurai generate
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 ```
 
-### Solver
-*Note: all the commands below were run with SEED=42 to keep the results reproducible.*
+## Solver
+*Note: all the commands below were run with the environment variable `SEED=42`
+to keep the results reproducible.*
 ```
 ## generate a new puzzle and feed it to the solver to solve
-$ ./go-sudoku -format csv generate | ./go-sudoku solve
+$ ./go-sudoku-generator -format csv generate | ./go-sudoku-generator solve
 ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
 ┃             INPUT             ┃             OUTPUT            ┃
 ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫

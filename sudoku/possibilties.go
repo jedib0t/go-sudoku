@@ -33,6 +33,11 @@ func (p Possibilities) Available() []int {
 	return p.available
 }
 
+// AvailableMap returns the available values in a map for quick look-ups.
+func (p Possibilities) AvailableMap() map[int]bool {
+	return p.possibilities
+}
+
 // AvailableLen returns the number of available values.
 func (p Possibilities) AvailableLen() int {
 	return len(p.available)

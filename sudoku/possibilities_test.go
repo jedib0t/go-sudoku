@@ -20,6 +20,12 @@ func TestPossibilities_Available(t *testing.T) {
 	assert.Equal(t, []int{2, 3}, p.Available())
 }
 
+func TestPossibilities_AvailableMap(t *testing.T) {
+	p := NewPossibilitiesFromMap(map[int]bool{1: false, 2: true, 3: true}, testRNG)
+	assert.NotNil(t, p)
+	assert.Equal(t, map[int]bool{2: true, 3: true}, p.AvailableMap())
+}
+
 func TestPossibilities_AvailableLen(t *testing.T) {
 	p := NewPossibilitiesFromMap(map[int]bool{1: false, 2: true, 3: true}, testRNG)
 	assert.NotNil(t, p)

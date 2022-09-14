@@ -22,4 +22,4 @@ do
     # simple command without a pipe
     (${BASH_REMATCH[1]}) 2>&1
   fi
-done <scripts/README.md.template
+done <docs/README.md.template

@@ -1,0 +1,50 @@
+# go-sudoku
+<!----------------------------------------------------------------------------------------------------------------------
+-- Please note that this file is auto-generated using the 'docs/generate_readme.sh' script. Changes to this file will
+-- be over-written in the next build. If you need to change this file, make the changes to 'docs/README.md.template'
+-- instead.
+---------------------------------------------------------------------------------------------------------------------->
+
+[![Build Status](https://github.com/jedib0t/go-sudoku/workflows/CI/badge.svg?branch=main)](https://github.com/jedib0t/go-sudoku/actions?query=workflow%3ACI+event%3Apush+branch%3Amain)
+
+An implementation of Sudoku game, generators and solvers for the command line in
+GoLang.
+
+# Install
+
+You can download the latest release for your OS [here](https://github.com/jedib0t/go-sudoku/releases/latest).
+
+## Screenshot
+
+<img src="docs/game.png" alt="Game"/>
+
+# Usage
+
+## Game
+```
+$ ./go-sudoku -help
+```
+
+## Generator
+*Note: all the commands below were run with the environment variable `SEED=42`
+to keep the results reproducible.*
+```
+$ ./go-sudoku-generator generate
+
+## custom difficulty
+$ ./go-sudoku-generator -difficulty insane generate
+
+## custom pattern
+$ ./go-sudoku-generator -pattern diamond generate
+
+## samurai sudoku
+$ ./go-sudoku-generator -type samurai generate
+```
+
+## Solver
+*Note: all the commands below were run with the environment variable `SEED=42`
+to keep the results reproducible.*
+```
+## generate a new puzzle and feed it to the solver to solve
+$ ./go-sudoku-generator -format csv generate | ./go-sudoku-generator solve
+```

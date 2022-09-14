@@ -10,23 +10,37 @@ default: run
 
 all: test
 
-build:
-	go build .
+build: build-game build-generator
 
-demo: build
-	./go-sudoku generate
-	./go-sudoku -type jigsaw generate
-	./go-sudoku -type samurai generate
+build-game:
+	go build -o go-sudoku ./cmd/game
 
-demo-solve: build
-	./go-sudoku -format csv generate | ./go-sudoku -progress solve
+build-generator:
+	go build -o go-sudoku-generator ./cmd/generator
 
-dist:
+demo-generator: build-generator
+	./go-sudoku-generator generate
+	./go-sudoku-generator -type jigsaw generate
+	./go-sudoku-generator -type samurai generate
+
+demo-solver: build-generator
+	./go-sudoku-generator -format csv generate | ./go-sudoku-generator -progress solve
+
+dist: dist-game dist-generator
+
+dist-game:
 	gox -ldflags="-s -w -X main.version=${VERSION}" \
 	    -os="linux darwin windows" \
 	    -arch="amd64" \
-	    -output="./dist/{{.Dir}}_{{.OS}}_{{.Arch}}" \
-	    .
+	    -output="./dist/go-sudoku_{{.OS}}_{{.Arch}}_${VERSION}" \
+	    ./cmd/game
+
+dist-generator:
+	gox -ldflags="-s -w -X main.version=${VERSION}" \
+	    -os="linux darwin windows" \
+	    -arch="amd64" \
+	    -output="./dist/go-sudoku-generator_{{.OS}}_{{.Arch}}_${VERSION}" \
+	    ./cmd/generator
 
 fmt: tidy
 	go fmt $(shell go list ./...)
@@ -34,7 +48,7 @@ fmt: tidy
 gen: gen-readme
 
 gen-readme: build
-	./scripts/generate_readme.sh > README.md
+	./docs/generate_readme.sh > README.md
 
 get-tools:
 	go install github.com/mitchellh/gox@v1.0.1
