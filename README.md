@@ -7,62 +7,22 @@
 
 [![Build Status](https://github.com/jedib0t/go-sudoku/workflows/CI/badge.svg?branch=main)](https://github.com/jedib0t/go-sudoku/actions?query=workflow%3ACI+event%3Apush+branch%3Amain)
 
-An implementation of Sudoku generators and solvers in GoLang.
+An implementation of Sudoku game, generators and solvers for the command line in
+GoLang.
 
 ## Usage
 
-### Help
+### Game
 ```
-$ ./go-sudoku --help
-go-sudoku: A GoLang based Sudoku generator and solver.
-
-Usage: go-sudoku [flags] <action>
-
-Version: dev
-
-Actions:
---------
-  * generate: Generate a Sudoku Grid and apply the specified difficulty on it
-  * solve: Solve a Sudoku puzzle provided in a text (CSV) file
-
-Examples:
----------
-  * ./go-sudoku
-  * ./go-sudoku -algorithm back-tracking -theme green -seed 42 generate
-  * ./go-sudoku -format csv generate
-  * ./go-sudoku -input puzzle.csv solve
-  * ./go-sudoku -difficulty hard -format csv generate | ./go-sudoku solve
-
-Optional Flags:
----------------
-  -algorithm string
-    	Algorithm (back-tracking/brute-force) (default "back-tracking")
-  -debug
-    	Enable Debug Logging?
-  -difficulty string
-    	Difficulty (none/easy/medium/hard/insane) (default "medium")
-  -format string
-    	Rendering Format (csv/table) (default "table")
-  -help
-    	Display this usage and help text
-  -input string
-    	File containing a Sudoku Puzzle in CSV format
-  -no-color
-    	Disable colors in rendering? [$NO_COLOR]
-  -pattern string
-    	Pattern to use instead of Difficulty (diamond/octagon/square/star/target/triangle)
-  -progress
-    	Show progress in real-time with an artificial delay?
-  -seed int
-    	RNG Seed (0 => random number based on time) [$SEED]
-  -type string
-    	Sudoku Type (default/jigsaw/samurai) (default "default")
+$ ./go-sudoku -help
+It works!
 ```
 
 ### Generator
-*Note: all the commands below were run with SEED=42 to keep the results reproducible.*
+*Note: all the commands below were run with the environment variable `SEED=42`
+to keep the results reproducible.*
 ```
-$ ./go-sudoku generate
+$ ./go-sudoku-generator generate
 ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
 ┃     8  5 │    6    │ 2     1  ┃
 ┃        7 │ 9  2    │          ┃
@@ -80,7 +40,7 @@ $ ./go-sudoku generate
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 
 ## custom difficulty
-$ ./go-sudoku -difficulty insane generate
+$ ./go-sudoku-generator -difficulty insane generate
 ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
 ┃     8    │    6    │ 2        ┃
 ┃          │         │          ┃
@@ -98,7 +58,7 @@ $ ./go-sudoku -difficulty insane generate
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 
 ## custom pattern
-$ ./go-sudoku -pattern diamond generate
+$ ./go-sudoku-generator -pattern diamond generate
 ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
 ┃          │    6    │          ┃
 ┃          │ 9  2  3 │          ┃
@@ -116,7 +76,7 @@ $ ./go-sudoku -pattern diamond generate
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 
 ## samurai sudoku
-$ ./go-sudoku -type samurai generate
+$ ./go-sudoku-generator -type samurai generate
 ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
 ┃     1    │    2  8 │ 5     6 │         │ 4  8    │    2  1 │          ┃
 ┃  5       │         │         │         │       9 │ 8  4  7 │    6  3  ┃
@@ -151,25 +111,10 @@ $ ./go-sudoku -type samurai generate
 ```
 
 ### Solver
-*Note: all the commands below were run with SEED=42 to keep the results reproducible.*
+*Note: all the commands below were run with the environment variable `SEED=42`
+to keep the results reproducible.*
 ```
 ## generate a new puzzle and feed it to the solver to solve
 $ ./go-sudoku -format csv generate | ./go-sudoku solve
-┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-┃             INPUT             ┃             OUTPUT            ┃
-┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
-┃     8  5 │    6    │ 2     1  ┃  9  8  5 │ 7  6  4 │ 2  3  1  ┃
-┃        7 │ 9  2    │          ┃  4  1  7 │ 9  2  3 │ 8  6  5  ┃
-┃  6  3    │    5  1 │       4  ┃  6  3  2 │ 8  5  1 │ 7  9  4  ┃
-┃ ─────────┼─────────┼───────── ┃ ─────────┼─────────┼───────── ┃
-┃  2       │       8 │ 6  7     ┃  2  4  9 │ 5  1  8 │ 6  7  3  ┃
-┃          │       2 │       9  ┃  8  6  3 │ 4  7  2 │ 5  1  9  ┃
-┃     5    │    3  9 │          ┃  7  5  1 │ 6  3  9 │ 4  2  8  ┃
-┃ ─────────┼─────────┼───────── ┃ ─────────┼─────────┼───────── ┃
-┃  1  2  8 │       6 │ 9  5     ┃  1  2  8 │ 3  4  6 │ 9  5  7  ┃
-┃  3  7  4 │ 2  9    │          ┃  3  7  4 │ 2  9  5 │ 1  8  6  ┃
-┃  5       │ 1     7 │          ┃  5  9  6 │ 1  8  7 │ 3  4  2  ┃
-┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
-┃       45 blocks to solve      ┃          3621 cycles          ┃
-┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+It works!
 ```

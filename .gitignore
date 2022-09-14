@@ -3,5 +3,4 @@
 .coverprofile
 /.idea/
 /dist
-/go-sudoku
-/go-sudoku.exe
+/go-sudoku*
