@@ -111,18 +111,24 @@ func renderGrid() string {
 			valOG := gridOG.Get(loc.X, loc.Y)
 
 			colors := colorNumbers["answer"]
-			if val == 0 {
-				colors = colorNumbers["key"]
-			} else if val == valCursor {
-				colors = colorNumbers["selected"]
-			} else if val == valOG {
-				colors = colorNumbers["og"]
-			} else if val != valAnswer && *flagShowWrong {
-				colors = colorNumbers["bad"]
-			}
-			if cursor == loc {
-				colors[0] = colorNumbers["cursor"][0]
-				colors[1] = colorNumbers["cursor"][1]
+			if grid.Done() {
+				if val == valOG {
+					colors = colorNumbers["og"]
+				}
+			} else {
+				if val == 0 {
+					colors = colorNumbers["key"]
+				} else if val == valCursor {
+					colors = colorNumbers["selected"]
+				} else if val == valOG {
+					colors = colorNumbers["og"]
+				} else if val != valAnswer && *flagShowWrong {
+					colors = colorNumbers["bad"]
+				}
+				if cursor == loc {
+					colors[0] = colorNumbers["cursor"][0]
+					colors[1] = colorNumbers["cursor"][1]
+				}
 			}
 			row = append(row, renderKey(val, colors))
 
